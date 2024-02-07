@@ -1,0 +1,80 @@
+{% extends "users/base.html" %}
+{% load static %}
+
+{% block title %} Home Page {% endblock title%}
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-4">Welcome, {{user.first_name.title|default:'Guest'}}</h1>
+        <br>
+        <form id="myForm">
+
+        {% csrf_token %}
+            <div style="display:flex; justify-content:center; align-items:center">
+                <label class="sr-only"><b>Enter Text: </b>&nbsp;&nbsp;  </label>
+                <input style="height:50px; width:600px; text-align:center" type="text" class="form-control" placeholder="Enter text to generator image" required="" autofocus="" name="text_for_image">
+            </div>
+            <br>
+            <div style="display:flex; justify-content:center; align-items:center">
+                    <button id="genBtn" style="width:150px; height:auto" class="btn btn-lg btn-primary btn-block" type="submit" >Generator</button>
+            </div>
+        </form>
+
+        <br>
+        <div id="show_image" style="display:flex; justify-content:center; align-items:center; display:none;">
+        </div>
+
+    </div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+        $(document).ready(function () {
+            $('#myForm').submit(function (e) {
+                e.preventDefault(); // Prevent the default form submission
+                // Make an AJAX request to the process_form view
+             document.getElementById("genBtn").disabled = true;
+                $.ajax({
+                    url: '{% url "my_view" %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: $('#myForm').serialize(), // Serialize the form data
+                    success: function (data) {
+                        if (data.success) {
+                            // Show the success message div
+                            document.getElementById("genBtn").disabled = false;
+
+                            $('#show_image').show()
+                            displayImage(data.image_path);
+                        } else {
+                            console.error('Form submission failed');
+                        }
+                    },
+                    error: function () {
+                        console.error('Error in AJAX request');
+                    }
+                });
+            });
+        });
+
+function displayImage(imagePath) {
+    // Get the container element
+    var imageContainer = document.getElementById('show_image');
+
+    // Create an img element
+    var imageElement = document.createElement('img');
+    imageElement.src = imagePath;
+    imageElement.alt = 'Generated Image';
+    imageElement.style.marginLeft = '250px';
+
+    // Append the img element to the container
+    imageContainer.innerHTML = '';  // Clear previous content
+    imageContainer.appendChild(imageElement);
+}
+</script>
+<script>
+    function myFunction() {
+        var button = document.getElementById("genBtn");
+        button.disabled = true;
+
+    }
+</script>
+
+{% endblock content %}

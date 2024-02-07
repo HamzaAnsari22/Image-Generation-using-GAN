@@ -1,0 +1,11 @@
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+.DS_Store
+glove_embeddings.npy
+.env
+venv/
+flowers/
+.idea/
